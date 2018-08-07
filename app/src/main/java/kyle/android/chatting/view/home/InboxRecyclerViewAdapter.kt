@@ -20,4 +20,9 @@ class InboxRecyclerViewAdapter(val list: ArrayList<Inbox>) : RecyclerView.Adapte
     override fun getItemCount(): Int {
         return list.size
     }
+
+    fun addItem(inbox: Inbox) {
+        items.add(inbox)
+        notifyItemInserted(itemCount - 1)
+    }
 }

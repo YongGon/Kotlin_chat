@@ -1,5 +1,6 @@
 package kyle.android.chatting.view.home
 
+import android.arch.lifecycle.ViewModelProvider
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     var id: Long = 0L
     var binding: ActivityMainBinding? = null
     var adapter: InboxRecyclerViewAdapter? = null
+    var inboxViewModel: InboxViewModel? = null;
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                             var textview = itemView?.findViewById<TextView>(R.id.message)
                             username?.setText("Kyle : ")
                             textview?.setText(item["message"].toString())
-//                            layout?.addView(itemView)
+
                         }
                     }
                 })
@@ -71,15 +73,10 @@ class MainActivity : AppCompatActivity() {
             var textview = itemView?.findViewById<TextView>(R.id.message)
             username?.setText("Kyle : ")
             textview?.setText(input?.text?.toString())
-//            layout?.addView(itemView)
 
-//            var inbox = Inbox()
-//            inbox.id = id++
-//            inbox.userId = 1
-//            inbox.message = input?.text.toString()
-//            input.setText("")
-
-//            db.collection("inbox").add(inbox)
+            var newInbox = Inbox(1, 72738, input.text.toString())
+            adapter!!.addItem(newInbox)
+            db.collection("inbox").add(newInbox)
         }
     }
 }
