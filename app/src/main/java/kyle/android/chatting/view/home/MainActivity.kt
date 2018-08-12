@@ -1,6 +1,8 @@
 package kyle.android.chatting.view.home
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -14,6 +16,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kyle.android.chatting.R
 import kyle.android.chatting.databinding.ActivityMainBinding
 import kyle.android.chatting.model.Inbox
+import kyle.android.chatting.model.User
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,41 +32,26 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var list = arrayListOf<Inbox>(
-                Inbox(1, 72738, "test"),
-                Inbox(1, 72738, "test"),
-                Inbox(1, 72738, "test")
-        )
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        inboxViewModel = ViewModelProviders.of(this).get(InboxViewModel::class.java)
 
         var layoutManager = LinearLayoutManager(this)
         binding?.recyclerView?.layoutManager = layoutManager
 
-        adapter = InboxRecyclerViewAdapter(list)
+        adapter = InboxRecyclerViewAdapter()
         binding?.recyclerView?.adapter = adapter;
 
+        inboxViewModel!!.inboxMutableLivedata.observe(this, Observer {
+
+            if (it != null && !it.isEmpty()) {
+                adapter!!.itemReset(it)
+            }
+
+        })
 
 
-
-
-        // 대화내용을 가져온다.
-        db.collection("inbox").get()
-                .addOnCompleteListener(OnCompleteListener { task ->
-
-                    if (task.isSuccessful) {
-                        var items = task.getResult();
-                        for (item in items) {
-
-                            var itemView = LayoutInflater.from(this).inflate(R.layout.item_message, null)
-                            var username = itemView?.findViewById<TextView>(R.id.username)
-                            var textview = itemView?.findViewById<TextView>(R.id.message)
-                            username?.setText("Kyle : ")
-                            textview?.setText(item["message"].toString())
-
-                        }
-                    }
-                })
+        inboxViewModel!!.getInboxList(this)
 
 
 
@@ -74,7 +62,7 @@ class MainActivity : AppCompatActivity() {
             username?.setText("Kyle : ")
             textview?.setText(input?.text?.toString())
 
-            var newInbox = Inbox(1, 72738, input.text.toString())
+            var newInbox = Inbox(1, 72738, input.text.toString(), User(1, "test"))
             adapter!!.addItem(newInbox)
             db.collection("inbox").add(newInbox)
         }

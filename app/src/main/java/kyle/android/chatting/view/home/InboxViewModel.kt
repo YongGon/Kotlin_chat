@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.FirebaseFirestore
 import kyle.android.chatting.R
 import kyle.android.chatting.model.Inbox
+import kyle.android.chatting.model.User
 
 /**
  * Created by gon on 2018. 8. 7..
@@ -26,7 +27,11 @@ class InboxViewModel : ViewModel() {
 
             if (task.isSuccessful) {
                 var items = task.getResult();
-                inboxMutableLivedata.value = items as MutableList<Inbox>
+                var lists: ArrayList<Inbox> = ArrayList()
+                for(item in items) {
+                    lists.add(Inbox(1, 72738, item["message"].toString(), User(1, "kyle")))
+                }
+                inboxMutableLivedata.value = lists
             }
         })
     }

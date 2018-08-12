@@ -1,3 +1,3 @@
 package kyle.android.chatting.model
 
-class Inbox(val id: Long, val userId: Long, var message: String)
+data class Inbox(val id: Long, val userId: Long, val message: String, val user: User)
